@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Mali:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>จดหมาย</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Mali', 'Prompt', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(-45deg, #ffcad4, #f3a6c6, #ff8fab, #ffd3e1, #ffb3d9);
+            background-size: 400% 400%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: gradientShift 20s ease infinite;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 100% 50%; }
+            50% { background-position: 50% 100%; }
+            75% { background-position: 0% 100%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Floating decorative elements */
+        .decorative-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .floating-letter {
+            position: absolute;
+            color: rgba(255, 182, 193, 0.3);
+            animation: letterFloat 15s ease-in-out infinite;
+            font-size: 35px;
+        }
+        
+        @keyframes letterFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.3; }
+            25% { transform: translateY(-60px) rotate(45deg) scale(1.1); opacity: 0.8; }
+            50% { transform: translateY(-120px) rotate(90deg) scale(1.2); opacity: 1; }
+            75% { transform: translateY(-60px) rotate(135deg) scale(1.1); opacity: 0.8; }
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 950px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            box-shadow: 
+                0 25px 50px rgba(255, 105, 135, 0.2),
+                0 15px 30px rgba(255, 182, 193, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 182, 193, 0.3);
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+            animation: containerFloat 12s ease-in-out infinite;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 182, 193, 0.08), transparent);
+            animation: shimmer 8s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        @keyframes containerFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.005); }
+        }
+        
+        .tabs {
+            display: flex;
+            background: linear-gradient(135deg, #ff8fab, #ffcad4);
+            padding: 15px 15px 0;
+            border-radius: 25px 25px 0 0;
+            gap: 8px;
+        }
+        
+        .tab {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 245, 248, 0.8));
+            border: 2px solid rgba(255, 182, 193, 0.2);
+            border-radius: 15px 15px 0 0;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #ff4d79;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .tab:hover::before {
+            left: 100%;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #ff8fab, #ffcad4);
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 139, 171, 0.3);
+            border-color: rgba(255, 139, 171, 0.5);
+            font-weight: 600;
+        }
+        
+        .tab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 182, 193, 0.2);
+        }
+        
+        .content {
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        h1 {
+            color: #ff4d79;
+            margin-bottom: 35px;
+            text-shadow: 0 4px 8px rgba(255, 105, 135, 0.2);
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff4d79, #ff6b93, #ff8fab);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+            animation: titleGlow 4s ease-in-out infinite;
+            text-align: center;
+        }
+        
+        @keyframes titleGlow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .image-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 450px;
+            margin: 0 auto 35px;
+            background: linear-gradient(135deg, #fff, #ffeef1);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 
+                0 20px 40px rgba(255, 105, 135, 0.15),
+                0 10px 25px rgba(255, 182, 193, 0.1);
+            border: 3px solid rgba(255, 182, 193, 0.3);
+            animation: imageFloat 8s ease-in-out infinite;
+        }
+        
+        @keyframes imageFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-8px) rotate(0.5deg); }
+            50% { transform: translateY(-12px) rotate(0deg); }
+            75% { transform: translateY(-8px) rotate(-0.5deg); }
+        }
+        
+        .image-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 182, 193, 0.1), transparent);
+            animation: imageShimmer 6s linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        @keyframes imageShimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .image-wrapper {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2;
+        }
+        
+        .image-wrapper.hidden {
+            opacity: 0;
+            transform: scale(0.9) rotateY(90deg);
+        }
+        
+        .image-wrapper.visible {
+            opacity: 1;
+            transform: scale(1) rotateY(0deg);
+        }
+        
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: all 0.5s ease;
+        }
+        
+        .image-container:hover .image-wrapper img {
+            transform: scale(1.05);
+        }
+        
+        .toggle-button {
+            background: linear-gradient(135deg, #ff6b93, #ff4d79);
+            color: white;
+            padding: 18px 35px;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 
+                0 10px 25px rgba(255, 105, 135, 0.3),
+                0 5px 15px rgba(255, 105, 135, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            margin-right: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .toggle-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .toggle-button:hover::before {
+            left: 100%;
+        }
+        
+        .toggle-button:hover {
+            background: linear-gradient(135deg, #ff4d79, #ff2d62);
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: 
+                0 15px 35px rgba(255, 105, 135, 0.4),
+                0 8px 25px rgba(255, 105, 135, 0.3);
+        }
+        
+        .next-button {
+            background: linear-gradient(135deg, #6b8bff, #4d6dff);
+            color: white;
+            padding: 18px 35px;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 
+                0 10px 25px rgba(107, 139, 255, 0.3),
+                0 5px 15px rgba(107, 139, 255, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+        }
+        
+        .next-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .next-button:hover::before {
+            left: 100%;
+        }
+        
+        .next-button:hover {
+            background: linear-gradient(135deg, #4d6dff, #2d4fff);
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: 
+                0 15px 35px rgba(107, 139, 255, 0.4),
+                0 8px 25px rgba(107, 139, 255, 0.3);
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+        
+        /* Letter decoration */
+        .letter-decoration {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.2), rgba(255, 202, 212, 0.1));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: rgba(255, 105, 135, 0.4);
+            animation: decorationFloat 10s ease-in-out infinite;
+        }
+        
+        .letter-decoration:nth-child(1) { top: 20px; left: 20px; animation-delay: 0s; }
+        .letter-decoration:nth-child(2) { top: 20px; right: 20px; animation-delay: 2s; }
+        .letter-decoration:nth-child(3) { bottom: 20px; left: 20px; animation-delay: 4s; }
+        .letter-decoration:nth-child(4) { bottom: 20px; right: 20px; animation-delay: 6s; }
+        
+        @keyframes decorationFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.4; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
+        }
+        
+        /* Tab content animation */
+        .tab-content {
+            animation: contentFadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes contentFadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px) scale(0.95);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .tabs { flex-wrap: wrap; padding: 12px 12px 0; }
+            .tab { margin-bottom: 5px; padding: 12px 20px; font-size: 15px; }
+            .container { max-width: 98vw; border-radius: 18px; }
+            .content { padding: 25px; }
+            h1 { font-size: 2.3rem; margin-bottom: 25px; }
+            .image-container { height: 350px; }
+            .toggle-button, .next-button { font-size: 16px; padding: 15px 30px; }
+            .button-container { gap: 15px; }
+        }
+        
+        @media (max-width: 600px) {
+            .container { max-width: 99vw; border-radius: 15px; }
+            .content { padding: 20px; }
+            h1 { font-size: 2rem; margin-bottom: 20px; }
+            .image-container { height: 280px; }
+            .toggle-button, .next-button { font-size: 15px; padding: 12px 25px; }
+            .button-container { gap: 12px; flex-direction: column; }
+        }
+        
+        @media (max-width: 400px) {
+            .content { padding: 15px; }
+            h1 { font-size: 1.7rem; margin-bottom: 15px; }
+            .image-container { height: 220px; }
+            .toggle-button, .next-button { font-size: 14px; padding: 10px 20px; }
+        }
+        
+        @media (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
+            .container { max-width: 1000px; }
+            .image-container { height: 500px; }
+        }
+        
+        @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+            .container { max-width: 800px; }
+            .image-container { height: 450px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="decorative-bg" id="decorative-bg"></div>
+    
+    <div class="container">
+        <div class="letter-decoration"><i class="fas fa-envelope"></i></div>
+        <div class="letter-decoration"><i class="fas fa-heart"></i></div>
+        <div class="letter-decoration"><i class="fas fa-pen-fancy"></i></div>
+        <div class="letter-decoration"><i class="fas fa-feather-alt"></i></div>
+        
+        <div class="tabs">
+            <button class="tab active">
+                <i class="fas fa-envelope-open-text"></i> จดหมาย
+            </button>
+        </div>
+        
+        <div class="content tab-content">
+            <h1><i class="fas fa-paper-plane"></i> จดหมายถึงน้องใบป่าน chan</h1>
+            
+            <div class="image-container">
+                <div class="image-wrapper visible" id="image1">
+                    <img src="1.png" alt="จดหมาย">
+                </div>
+                <div class="image-wrapper hidden" id="image2">
+                    <img src="2.png" alt="โน้ต">
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <button class="toggle-button" id="toggleButton">
+                    <i class="fas fa-exchange-alt"></i> เปลี่ยนรูปภาพ
+                </button>
+                <button class="next-button" id="nextButton">
+                    <i class="fas fa-arrow-right"></i> ต่อไป
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Create floating letter decorations
+        function createFloatingLetters() {
+            const container = document.getElementById('decorative-bg');
+            const letterCount = 12;
+            const letters = ['envelope', 'heart', 'pen-fancy', 'feather-alt', 'paper-plane', 'book-open'];
+            
+            for (let i = 0; i < letterCount; i++) {
+                const letter = document.createElement('div');
+                letter.classList.add('floating-letter');
+                letter.innerHTML = '<i class="fas fa-' + letters[Math.floor(Math.random() * letters.length)] + '"></i>';
+                
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                const animationDelay = Math.random() * 15;
+                const size = Math.random() * 15 + 30;
+                
+                letter.style.left = left + '%';
+                letter.style.top = top + '%';
+                letter.style.animationDelay = animationDelay + 's';
+                letter.style.fontSize = size + 'px';
+                letter.style.animationDuration = (Math.random() * 8 + 12) + 's';
+                
+                container.appendChild(letter);
+            }
+        }
+        
+        // Initialize decorative elements
+        document.addEventListener('DOMContentLoaded', function() {
+            createFloatingLetters();
+            
+            const image1 = document.getElementById('image1');
+            const image2 = document.getElementById('image2');
+            const toggleButton = document.getElementById('toggleButton');
+            let isFirstImage = true;
+            
+            toggleButton.addEventListener('click', () => {
+                // Add click sound effect
+                const audio = document.createElement('audio');
+                audio.src = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DwumccBzuJ0vbTgAsBGGfD7+CUTQWSXT/dCJGYVXqhYzJBBAUIGW6p2vLhBnw0DKGNfZhGLhYI7QpWiYLn85HhfHu7YzMyChjjEoVPTn9UXKbZ2vPuGGZ8xS4YCd8QTlJ8rrmWD35gY0NFBRMWJ/wUU1FLXM3P2vQDFnB8uzzEOTmVRDZ8mKhUCJ9EHOcGjkVWU1tePKLb2vQF'; 
+                audio.volume = 0.3;
+                audio.play().catch(e => {});
+                
+                // Enhanced image transition
+                if (isFirstImage) {
+                    image1.classList.remove('visible');
+                    image1.classList.add('hidden');
+                    
+                    setTimeout(() => {
+                        image2.classList.remove('hidden');
+                        image2.classList.add('visible');
+                    }, 200);
+                } else {
+                    image2.classList.remove('visible');
+                    image2.classList.add('hidden');
+                    
+                    setTimeout(() => {
+                        image1.classList.remove('hidden');
+                        image1.classList.add('visible');
+                    }, 200);
+                }
+                
+                isFirstImage = !isFirstImage;
+            });
+            
+            // Add next button functionality
+            document.getElementById('nextButton').addEventListener('click', function() {
+                // Add click sound effect
+                const audio = document.createElement('audio');
+                audio.src = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DwumccBzuJ0vbTgAsBGGfD7+CUTQWSXT/dCJGYVXqhYzJBBAUIGW6p2vLhBnw0DKGNfZhGLhYI7QpWiYLn85HhfHu7YzMyChjjEoVPTn9UXKbZ2vPuGGZ8xS4YCd8QTlJ8rrmWD35gY0NFBRMWJ/wUU1FLXM3P2vQDFnB8uzzEOTmVRDZ8mKhUCJ9EHOcGjkVWU1tePKLb2vQF'; 
+                audio.volume = 0.3;
+                audio.play().catch(e => {});
+                
+                // Smooth page transition
+                document.body.style.opacity = '0';
+                setTimeout(() => {
+                    window.location.href = 'images.html';
+                }, 300);
+            });
+            
+            // Enhanced fade in animation
+            const tabContent = document.querySelector('.tab-content');
+            tabContent.style.animation = 'contentFadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+        });
+    </script>
+</body>
+</html>
